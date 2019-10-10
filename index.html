@@ -1,250 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Cronômetro de Prova</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <!-- Nav tabs -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Cronômetro de Prova</a>
+        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor01"
+            aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <center>
-        <h1>Cronômetro de Prova</h1>
-    </center>
-    <center>
-        <div class="clock">
 
-            00:00
+    </nav>
+    <div class="container mt-5">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab"
+                    aria-controls="pills-home" aria-selected="true">Prova</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab"
+                    aria-controls="pills-profile" aria-selected="false">Como usar?</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab"
+                    aria-controls="pills-contact" aria-selected="false">Sobre</a>
+            </li>
+        </ul>
+        <div class="tab-content mb-5" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                <h2>Cronômetro</h2>
+                <center>
+                    <div class="clock">
+                        00:00
+                    </div>
+                    <div class="controls" style="width:138px;">
+                        <button class="btn btn-success" onclick="startAndStop()" id="btnStart">Iniciar</button>
+                        <button style="display: none;" class="btn btn-primary" id="btnPause" onClick="pause()">Pausar</button>
+                        <br><br>
+
+                        <button style="display: none;" class="btn btn-primary btn-block" id="btnNext"onClick="next()">Próxima Questão</button>
+                    </div>
+
+                </center>
+                <h2>Tempos</h2>
+                <table class="table table-striped text-center">
+                    <thead class="thead-default">
+                        <tr>
+                            <th><center>Questão</center></th>
+                            <th><center>Duração</center></th>
+                            
+                        </tr>
+                        </thead>
+                        <tbody id="status">
+                            
+                        </tbody>
+                </table>
+                <h3 class="text-center">DURAÇÃO TOTAL: <span id="total"> 00:00 </span></span></h3>
+
+            </div>
+            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+
+
+            </div>
+            <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+
+
+            </div>
         </div>
-        <button onclick="startAndStop()">Iniciar</button>
-        <button id="btnPause" onClick="pause()">Pausar</button>
 
-        <table id="val" border="1" cellspacing="0">
-            <thead>
-                <tr>
-                    <center>
-                        <th>Questão</th>
-                    </center>
-                    <center>
-                        <th>Duração</th>
-                    </center>
-
-
-                </tr>
-            </thead>
-            <tbody id="status">
+    </div>
 
 
 
 
-            </tbody>
-
-        </table>
-        <div class="">
-            TOTAL: <span id="total"> 00:00 </span>
-        </div>
-
-    </center>
 
     <script src="jquery.min.js"></script>
-    <script>
-        var documento = "PROVA REALIZADA EM " + new Date() + "\n\n---QUESTÕES---\n\n";
+    <script src="script.js"></script>
 
-        var started = false;
-        var paused = false;
-
-        var min = 0;
-        var seg = 0;
-
-        var mintotal = 0;
-        var segtotal = 0;
-
-        var interval;
-
-        var qNum = 1;
-
-        function next() {
-            total();
-            renderTable();
-            min = 0;
-            seg = 0;
-            qNum++;
-        }
-
-        function total() {
-            segtotal += seg;
-            mintotal += min;
-
-            mintotal += Math.floor(segtotal / 60);
-            segtotal = segtotal % 60;
-
-
-
-
-        }
-
-        function renderTable() {
-            let strmin = min;
-            let strseg = seg;
-
-            if (strmin < 10) {
-                strmin = "0" + strmin;
-            }
-            if (strseg < 10) {
-                strseg = "0" + strseg;
-            }
-
-            documento += qNum + "º QUESTAO: " + strmin + ":" + strseg + "\n";
-
-            $('#status').html($('#status').html() + "<tr><td><center>" + qNum + "º</center></td><td><center>" + strmin + ":" + strseg + "</center></td></tr>");
-
-            strmin = mintotal;
-            strseg = segtotal;
-
-            if (strmin < 10) {
-                strmin = "0" + strmin;
-            }
-            if (strseg < 10) {
-                strseg = "0" + strseg;
-            }
-            $('#total').html(strmin + ":" + strseg)
-        }
-
-        function startAndStop() {
-            if (!started) {
-                console.log("Starting...");
-                interval = setInterval(push, 1000);
-                started = true;
-            } else {
-                if (confirm("Tem certeza que deseja encerrar a prova?")) {
-                    finish();
-                }
-
-            }
-
-        }
-
-        function finish() {
-            clearInterval(interval);
-
-            if (confirm("Prova finalizada com sucesso, deseja salvar as informações?")) {
-                let strmin = mintotal;
-                let strseg = segtotal;
-
-                if (strmin < 10) {
-                    strmin = "0" + strmin;
-                }
-                if (strseg < 10) {
-                    strseg = "0" + strseg;
-                }
-
-                documento += "\n\nTEMPO DE PROVA FINAL -> " + strmin + " minutos e " + strseg + " segundos\n";
-
-                let mediaSegundos = Math.floor(((mintotal * 60) + segtotal) / (qNum-1));
-                let mediaMinutos = Math.floor(mediaSegundos / 60);
-                mediaSegundos = mediaSegundos % 60;
-
-                strmin = mediaMinutos;
-                strseg = mediaSegundos;
-
-                if (strmin < 10) {
-                    strmin = "0" + strmin;
-                }
-                if (strseg < 10) {
-                    strseg = "0" + strseg;
-                }
-
-                documento += "\nTEMPO MÉDIO POR QUESTÃO -> " + strmin + " minutos e " + strseg + " segundos\n";
-
-
-                var saveData = (function () {
-                    var a = document.createElement("a");
-                    document.body.appendChild(a);
-                    a.style = "display: none";
-                    return function (data, fileName) {
-                        blob = new Blob([data], { type: "octet/stream" }),
-                            url = window.URL.createObjectURL(blob);
-                        a.href = url;
-                        a.download = fileName;
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                    };
-                }());
-
-                var data = documento,
-                    fileName = "prova.txt";
-
-                saveData(data, fileName);
-            }
-        }
-
-        function push() {
-            if (seg == 60) {
-                seg = 0;
-                min++;
-            } else {
-                seg++;
-            }
-            renderClock();
-        }
-
-        function renderClock() {
-            let strmin = min;
-            let strseg = seg;
-
-            if (strmin < 10) {
-                strmin = "0" + strmin;
-            }
-            if (strseg < 10) {
-                strseg = "0" + strseg;
-            }
-
-
-            $(".clock").html(strmin + ":" + strseg);
-
-        }
-
-
-
-
-
-        function pause() {
-            if (!paused) {
-                console.log("Pausing...");
-                clearInterval(interval);
-                $('#btnPause').html("Retornar");
-
-                paused = true;
-
-
-            } else {
-                console.log("Starting...");
-                interval = setInterval(push, 1000);
-                $('#btnPause').html("Pausar");
-
-
-                paused = false;
-
-            }
-
-
-
-        }
-
-        $('body').keypress(function (e) {
-            switch (e.which) {
-                case 32: next(); break;
-                case 112: pause(); break;
-                case 13: startAndStop(); break;
-            }
-            console.log(e.which);
-        });
-
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
