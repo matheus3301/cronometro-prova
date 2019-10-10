@@ -70,7 +70,7 @@ function startAndStop() {
 
         $("#btnStart").addClass("btn-danger");
         $("#btnStart").removeClass("btn-success");
-        $("#btnStart").html("Parar");
+        $("#btnStart").html("<i class='fas fa-stop'> </i> Parar");
 
 
         console.log("Starting...");
@@ -174,7 +174,7 @@ function pause() {
     if (!paused) {
         console.log("Pausing...");
         clearInterval(interval);
-        $('#btnPause').html("Voltar");
+        $('#btnPause').html("<i class='fas fa-play'> </i> Voltar");
 
         paused = true;
 
@@ -182,7 +182,7 @@ function pause() {
     } else {
         console.log("Starting...");
         interval = setInterval(push, 1000);
-        $('#btnPause').html("Pausar");
+        $('#btnPause').html("<i class='fas fa-pause'> </i> Pausar");
 
 
         paused = false;
