@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Cronômetro de Prova</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <center>
+        <h1>Cronômetro de Prova</h1>
+    </center>
+    <center>
+        <div class="clock">
+
+            00:00
+        </div>
+        <button onclick="start()">Iniciar</button>
+        <button id="btnPause" onClick="pause()">Pausar</button>
+
+        <table border="1" cellspacing="0" >
+            <thead>
+                <tr>
+                    <center><th>Questão</th></center>
+                    <center><th>Duração</th></center>
+                    
+
+                </tr>
+            </thead>
+            <tbody id="status">
+                <tr>
+                    <td><center>1º</center></td>
+                    <td><center>02:30</center></td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </center>
+    
+    <script src="jquery.min.js"></script>
+    <script>
+        var paused = false;
+
+        var min = 0;
+        var seg = 0;
+
+        var interval;
+
+        function start(){
+            console.log("Starting...");
+            interval = setInterval(push, 1000);
+        }
+
+        function push(){
+            if(seg == 60){
+                seg = 0;
+                min++;
+            }else{
+                seg++;
+            }
+            render();
+        }
+
+        function render(){
+            let strmin = min;
+            let strseg = seg;
+
+            if(strmin < 10){
+                strmin = "0"+strmin;
+            }
+            if(strseg < 10){
+                strseg = "0"+strseg;
+            }
+
+
+            $(".clock").html(strmin+":"+strseg);
+
+        }
+
+        function pause(){
+            if(!paused){
+                console.log("Pausing...");
+                clearInterval(interval);
+                $('#btnPause').html("Retornar");
+
+                paused = true;
+
+
+            }else{
+                console.log("Starting...");
+                interval = setInterval(push, 1000);
+                $('#btnPause').html("Pausar");
+                
+
+                paused = false;
+                
+            }
+
+            
+
+        }
+
+        
+    </script>
+</body>
+</html>
