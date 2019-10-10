@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,9 @@
 
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    
+
     <center>
         <h1>Cronômetro de Prova</h1>
     </center>
@@ -18,73 +20,200 @@
 
             00:00
         </div>
-        <button onclick="start()">Iniciar</button>
+        <button onclick="startAndStop()">Iniciar</button>
         <button id="btnPause" onClick="pause()">Pausar</button>
 
-        <table border="1" cellspacing="0" >
+        <table id="val" border="1" cellspacing="0">
             <thead>
                 <tr>
-                    <center><th>Questão</th></center>
-                    <center><th>Duração</th></center>
-                    
+                    <center>
+                        <th>Questão</th>
+                    </center>
+                    <center>
+                        <th>Duração</th>
+                    </center>
+
 
                 </tr>
             </thead>
             <tbody id="status">
-                <tr>
-                    <td><center>1º</center></td>
-                    <td><center>02:30</center></td>
 
-                </tr>
+
+
 
             </tbody>
 
         </table>
+        <div class="">
+            TOTAL: <span id="total"> 00:00 </span>
+        </div>
 
     </center>
-    
+
     <script src="jquery.min.js"></script>
     <script>
+        var documento = "PROVA REALIZADA EM " + new Date() + "\n\n---QUESTÕES---\n\n";
+
+        var started = false;
         var paused = false;
 
         var min = 0;
         var seg = 0;
 
+        var mintotal = 0;
+        var segtotal = 0;
+
         var interval;
 
-        function start(){
-            console.log("Starting...");
-            interval = setInterval(push, 1000);
+        var qNum = 1;
+
+        function next() {
+            total();
+            renderTable();
+            min = 0;
+            seg = 0;
+            qNum++;
         }
 
-        function push(){
-            if(seg == 60){
-                seg = 0;
-                min++;
-            }else{
-                seg++;
-            }
-            render();
+        function total() {
+            segtotal += seg;
+            mintotal += min;
+
+            mintotal += Math.floor(segtotal / 60);
+            segtotal = segtotal % 60;
+
+
+
+
         }
 
-        function render(){
+        function renderTable() {
             let strmin = min;
             let strseg = seg;
 
-            if(strmin < 10){
-                strmin = "0"+strmin;
+            if (strmin < 10) {
+                strmin = "0" + strmin;
             }
-            if(strseg < 10){
-                strseg = "0"+strseg;
+            if (strseg < 10) {
+                strseg = "0" + strseg;
             }
 
+            documento += qNum + "º QUESTAO: " + strmin + ":" + strseg + "\n";
 
-            $(".clock").html(strmin+":"+strseg);
+            $('#status').html($('#status').html() + "<tr><td><center>" + qNum + "º</center></td><td><center>" + strmin + ":" + strseg + "</center></td></tr>");
+
+            strmin = mintotal;
+            strseg = segtotal;
+
+            if (strmin < 10) {
+                strmin = "0" + strmin;
+            }
+            if (strseg < 10) {
+                strseg = "0" + strseg;
+            }
+            $('#total').html(strmin + ":" + strseg)
+        }
+
+        function startAndStop() {
+            if (!started) {
+                console.log("Starting...");
+                interval = setInterval(push, 1000);
+                started = true;
+            } else {
+                if (confirm("Tem certeza que deseja encerrar a prova?")) {
+                    finish();
+                }
+
+            }
 
         }
 
-        function pause(){
-            if(!paused){
+        function finish() {
+            clearInterval(interval);
+
+            if (confirm("Prova finalizada com sucesso, deseja salvar as informações?")) {
+                let strmin = mintotal;
+                let strseg = segtotal;
+
+                if (strmin < 10) {
+                    strmin = "0" + strmin;
+                }
+                if (strseg < 10) {
+                    strseg = "0" + strseg;
+                }
+
+                documento += "\n\nTEMPO DE PROVA FINAL -> " + strmin + " minutos e " + strseg + " segundos\n";
+
+                let mediaSegundos = Math.floor(((mintotal * 60) + segtotal) / (qNum-1));
+                let mediaMinutos = Math.floor(mediaSegundos / 60);
+                mediaSegundos = mediaSegundos % 60;
+
+                strmin = mediaMinutos;
+                strseg = mediaSegundos;
+
+                if (strmin < 10) {
+                    strmin = "0" + strmin;
+                }
+                if (strseg < 10) {
+                    strseg = "0" + strseg;
+                }
+
+                documento += "\nTEMPO MÉDIO POR QUESTÃO -> " + strmin + " minutos e " + strseg + " segundos\n";
+
+
+                var saveData = (function () {
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+                    return function (data, fileName) {
+                        blob = new Blob([data], { type: "octet/stream" }),
+                            url = window.URL.createObjectURL(blob);
+                        a.href = url;
+                        a.download = fileName;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    };
+                }());
+
+                var data = documento,
+                    fileName = "prova.txt";
+
+                saveData(data, fileName);
+            }
+        }
+
+        function push() {
+            if (seg == 60) {
+                seg = 0;
+                min++;
+            } else {
+                seg++;
+            }
+            renderClock();
+        }
+
+        function renderClock() {
+            let strmin = min;
+            let strseg = seg;
+
+            if (strmin < 10) {
+                strmin = "0" + strmin;
+            }
+            if (strseg < 10) {
+                strseg = "0" + strseg;
+            }
+
+
+            $(".clock").html(strmin + ":" + strseg);
+
+        }
+
+
+
+
+
+        function pause() {
+            if (!paused) {
                 console.log("Pausing...");
                 clearInterval(interval);
                 $('#btnPause').html("Retornar");
@@ -92,21 +221,30 @@
                 paused = true;
 
 
-            }else{
+            } else {
                 console.log("Starting...");
                 interval = setInterval(push, 1000);
                 $('#btnPause').html("Pausar");
-                
+
 
                 paused = false;
-                
+
             }
 
-            
+
 
         }
 
-        
+        $('body').keypress(function (e) {
+            switch (e.which) {
+                case 32: next(); break;
+                case 112: pause(); break;
+                case 13: startAndStop(); break;
+            }
+            console.log(e.which);
+        });
+
     </script>
 </body>
+
 </html>
